@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+ <head>
+	<meta charset="UTF-8">
+	<meta name="Generator" content="EditPlus®">
+	<meta name="Author" content="">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<title>快速阅读训练-数字训练</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/bootstrap-pincode-input.css" rel="stylesheet">
+	<script src="js/jquery-2.1.4.min.js"></script>
+	<script src="js/bootstrap-pincode-input.js"></script>
+	<script type="text/javascript">window.onerror=function(){return true;}</script>
+	<style>
+		body {
+			background:url(image/bg.jpg) no-repeat fixed center center;
+			color:#fff;
+		}
+		.container {
+			margin: 30px auto;
+			max-width: 640px;
+			text-align: center;
+			font-family:'微软雅黑';
+		}
+		#result{
+			height:300px;
+			overflow-y: scroll;
+			overflow-x: hidden;
+		}
+		.well{
+			background-color: #080925;
+			border: 1px solid #AAABB3;
+		}
+		/*滚动条样式*/
+		#result::-webkit-scrollbar {
+			width: 8px;
+		}
+		#result::-webkit-scrollbar-track {
+			background-color:#453d4a;
+			-webkit-border-radius: 2em;
+			-moz-border-radius: 2em;
+			border-radius:2em;
+		}
+		#result::-webkit-scrollbar-thumb {
+			background-color:#020318;
+			-webkit-border-radius: 2em;
+			-moz-border-radius: 2em;
+			border-radius:2em;
+		}
+		.pincode-input-text, .form-control.pincode-input-text {
+			background-color: #080925;
+			color: #60d2f5;
+		}
+	</style>
+	<script type="text/javascript">
+
+		function randomLen(len){
+			if(len && len > 0){
+				return random(Math.pow(10,len-1),Math.pow(10,len)-1);
+			}
+		}
+		//获取范围内的随机数  
+		function random(min,max){  
+			return Math.floor(min + Math.random() * (max - min));
+		}
+
+		function getNum(len,seetime){
+			var timeout = seetime || 1000;
+			var num = randomLen(len);
+			$("#rnum").text(num);
+			setTimeout("hideNum()",seetime);
+			return num;
+		}
+		
+		
+
+		function hideNum(){
+			$("#rnum").text("请输入刚才的数字");
+		}
+
+		function start(len,s){
+			var count=0,right=0,error=0;
+			var num = getNum(len,s);
+			$('#pincode-input1').pincodeInput({
+				hideDigits:false,
+				inputs:len,
+				complete:function(value, e, errorElement){
+					$('#pincode-input1').pincodeInput().data('plugin_pincodeInput').focus();
+					$('#pincode-input1').pincodeInput().data('plugin_pincodeInput').clear();
+					var cls = "success";
+					if(value==num){
+						$("#rnum").text("正确");
+						right++;
+					}else{
+						$("#rnum").text("错误");
+						cls = "danger";
+						error++;
+					}
+					count++;
+					
+					$("#result").prepend('<div class="alert alert-'+cls+'" role="alert">'+num+'--'+value+'</div>');
+					
+					setTimeout(function(){
+						num = getNum(len,s);
+					},1000);
+					$("#count").text(count);
+					$("#right").text(right);
+					$("#error").text(error);
+					$("#avg").text(Math.round(right / count * 10000) / 100.00 + "%");
+				}
+			}).data('plugin_pincodeInput').focus();
+		}
+
+		function getParameter(param){
+			var query = window.location.search;
+			var iLen = param.length;
+			var iStart = query.indexOf(param);
+			if (iStart == -1){
+				return "";
+			}
+			iStart += iLen + 1;
+			var iEnd = query.indexOf("&", iStart);
+			if (iEnd == -1){
+				return query.substring(iStart);
+			}
+			return query.substring(iStart, iEnd);
+		}
+
+		$(document).ready(function() {
+			//训练数字位数
+			var len = getParameter("len") || 4;
+			//闪现时间长度（毫秒）
+			var s = getParameter("s") || 600;
+			
+			$("#start").click(function(){
+				start(len,s);
+				$(this).hide();
+			});
+		});
+	</script>
+
+ </head>
+ <body>
+	<div class="container">
+	  <h1>快速阅读训练</h1>
+	  <div class="container-fluid">
+		<div class="row">
+		  <div class="col-md-12">
+			<h4>数字训练</h4>
+			<br/>
+			<div class="well"><h4 id="rnum"></h4></div>
+			<input type="text" id="pincode-input1" style="display:none">
+			<input type="button" value="开始" id="start" style="color:black">
+			<br/>
+			<br/>
+			<!--<br/>
+			<br/>
+			<b>Methods:</b><br/>
+			<a href="#" onclick="javascript:$('#pincode-input1').pincodeInput().data('plugin_pincodeInput').focus()" class="btn btn-danger">focus</a> <a href="#" onclick="javascript:$('#pincode-input1').pincodeInput().data('plugin_pincodeInput').clear()" class="btn btn-danger">clear</a><br/>
+			<br/>
+			-->
+			<div class="count">
+				<div>成绩：</div>
+				<span>完成：<label id="count"></label></span>
+				<span>正确：<label id="right"></label></span>
+				<span>错误：<label id="error"></label></span>
+				<span>正确率：<label id="avg"></label></span>
+			</div>
+			<div class="well" id="result">
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+
+ </body>
+</html>
